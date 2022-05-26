@@ -1,14 +1,14 @@
 use std::collections::VecDeque;
 
 #[derive(Debug)]
-pub struct TreeNode {
-    value: i32,
-    left: Option<Box<TreeNode>>,
-    right: Option<Box<TreeNode>>,
+pub struct TreeNode<T> {
+    value: T,
+    left: Option<Box<TreeNode<T>>>,
+    right: Option<Box<TreeNode<T>>>,
 }
 
-impl TreeNode {
-    pub fn count_recursive(&self) -> i32 {
+impl<T> TreeNode<T> {
+    pub fn count_recursive(&self) -> usize {
         let count_left = self.left.as_ref().map_or(0, |node| node.count_recursive());
         let count_right = self.right.as_ref().map_or(0, |node| node.count_recursive());
         return 1 + count_left + count_right;
@@ -16,12 +16,12 @@ impl TreeNode {
 }
 
 #[derive(Debug)]
-pub struct BinaryTree {
-    root: Option<TreeNode>,
+pub struct BinaryTree<T> {
+    root: Option<TreeNode<T>>,
 }
 
-impl BinaryTree {
-    pub fn new(root: TreeNode) -> Self {
+impl<T> BinaryTree<T> {
+    pub fn new(root: TreeNode<T>) -> Self {
         Self { root: Some(root) }
     }
 
@@ -29,13 +29,13 @@ impl BinaryTree {
         Self { root: None }
     }
 
-    pub fn count_recursive(&self) -> i32 {
+    pub fn count_recursive(&self) -> usize {
         self.root.as_ref().map_or(0, |node| node.count_recursive())
     }
 
-    pub fn count_iterative(&self) -> i32 {
+    pub fn count_iterative(&self) -> usize {
         let mut count = 0;
-        let mut queue = VecDeque::<&TreeNode>::new();
+        let mut queue = VecDeque::<&TreeNode<T>>::new();
         if let Some(ref node) = self.root {
             queue.push_back(node);
         };
@@ -59,7 +59,7 @@ mod tests {
     // (empty)
     #[test]
     fn count_empty_tree() {
-        let tree = BinaryTree::new_empty();
+        let tree = BinaryTree::<i32>::new_empty();
         assert_eq!(tree.count_recursive(), 0);
         assert_eq!(tree.count_iterative(), 0);
     }
