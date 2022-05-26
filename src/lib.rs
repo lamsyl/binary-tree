@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 #[derive(Debug)]
 pub struct TreeNode {
     value: i32,
@@ -30,6 +32,24 @@ impl BinaryTree {
     pub fn count_recursive(&self) -> i32 {
         self.root.as_ref().map_or(0, |node| node.count_recursive())
     }
+
+    pub fn count_iterative(&self) -> i32 {
+        let mut count = 0;
+        let mut queue = VecDeque::<&TreeNode>::new();
+        if let Some(ref node) = self.root {
+            queue.push_back(node);
+        };
+        while let Some(front) = queue.pop_front() {
+            count += 1;
+            if let Some(left) = front.left.as_deref() {
+                queue.push_back(left);
+            }
+            if let Some(right) = front.right.as_deref() {
+                queue.push_back(right);
+            }
+        }
+        count
+    }
 }
 
 #[cfg(test)]
@@ -41,6 +61,7 @@ mod tests {
     fn count_empty_tree() {
         let tree = BinaryTree::new_empty();
         assert_eq!(tree.count_recursive(), 0);
+        assert_eq!(tree.count_iterative(), 0);
     }
 
     //   1
@@ -59,6 +80,7 @@ mod tests {
         };
         let tree = BinaryTree::new(root);
         assert_eq!(tree.count_recursive(), 2);
+        assert_eq!(tree.count_iterative(), 2);
     }
 
     //   1
@@ -77,6 +99,7 @@ mod tests {
         };
         let tree = BinaryTree::new(root);
         assert_eq!(tree.count_recursive(), 2);
+        assert_eq!(tree.count_iterative(), 2);
     }
 
     //          1
@@ -107,6 +130,7 @@ mod tests {
         }
         let tree = BinaryTree::new(root);
         assert_eq!(tree.count_recursive(), n);
+        assert_eq!(tree.count_iterative(), n);
     }
 
     //          1
@@ -147,5 +171,6 @@ mod tests {
         };
         let tree = BinaryTree::new(root);
         assert_eq!(tree.count_recursive(), 7);
+        assert_eq!(tree.count_iterative(), 7);
     }
 }
